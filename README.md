@@ -4,6 +4,8 @@ Suspend/resume all Vagrant boxes on system shutdown/startup
 
 this is an update of https://www.ollegustafsson.com/vagrant-suspend-resume/
 
+For modern linux distributions
+
 🧩 1. Overview
 
 We’ll add:
@@ -151,9 +153,15 @@ When booting:
 After that, the state.json file is cleared.
 
 ✅ Benefits of This Version
+
 Feature	Description
+
 💾 State tracking	Only resumes boxes suspended by the system
+
 🧠 Stateless startup	If no state exists, startup does nothing
+
 🧱 Systemd-native	Integrated with modern Ubuntu systems
+
 📜 Detailed logs	/var/log/vagrant-boxes.log for debugging
+
 🕐 Timeouts	Avoids hanging during suspend/resume
