@@ -83,3 +83,77 @@ esac
 exit 0
 ```
 
+
+🗂️ 3. Permissions and Setup
+
+Run once to set everything up:
+
+```bash
+sudo mkdir -p /var/lib/vagrant-boxes
+sudo touch /var/lib/vagrant-boxes/state.json
+sudo chmod 777 /var/lib/vagrant-boxes/state.json
+sudo chmod +x /usr/local/bin/vagrant-boxes
+sudo touch /var/log/vagrant-boxes.log
+sudo chmod 666 /var/log/vagrant-boxes.log
+```
+🧠 4. Keep the Same systemd Unit File
+
+Your /etc/systemd/system/vagrant-boxes.service stays the same:
+
+```bash
+[Unit]
+Description=Suspend/resume all Vagrant boxes on shutdown/startup
+After=network.target vboxdrv.service
+Before=shutdown.target halt.target reboot.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/vagrant-boxes start
+ExecStop=/usr/local/bin/vagrant-boxes stop
+TimeoutStopSec=300
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+Then reload and enable:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable vagrant-boxes.service
+```
+
+🧾 5. Example Behavior
+When shutting down:
+```bash
+[2025-10-18 10:41:32] Suspending running Vagrant boxes...
+[2025-10-18 10:41:33] -> Suspending /home/eric/dev/vm1 for eric
+[2025-10-18 10:41:45] -> Suspending /home/eric/dev/vm2 for eric
+[2025-10-18 10:41:45] Done suspending boxes. Stored state in /var/lib/vagrant-boxes/state.json
+```
+
+/var/lib/vagrant-boxes/state.json now contains:
+```bash
+eric|/home/eric/dev/vm1
+eric|/home/eric/dev/vm2
+```
+
+When booting:
+```bash
+[2025-10-19 08:04:21] Starting/resuming Vagrant boxes from last shutdown...
+[2025-10-19 08:04:22] -> Resuming /home/eric/dev/vm1 for eric
+[2025-10-19 08:04:35] -> Resuming /home/eric/dev/vm2 for eric
+[2025-10-19 08:04:36] Done starting boxes.
+```
+After that, the state.json file is cleared.
+
+✅ Benefits of This Version
+Feature	Description
+💾 State tracking	Only resumes boxes suspended by the system
+🧠 Stateless startup	If no state exists, startup does nothing
+🧱 Systemd-native	Integrated with modern Ubuntu systems
+📜 Detailed logs	/var/log/vagrant-boxes.log for debugging
+🕐 Timeouts	Avoids hanging during suspend/resume
