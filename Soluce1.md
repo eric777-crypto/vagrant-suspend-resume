@@ -1,5 +1,6 @@
 # vagrant-suspend-resume
 Suspend/resume all Vagrant boxes on system shutdown/startup
+(ATTENTION CELA NE FONCTIONNE PAS BIEN)
 
 
 this is an update of https://www.ollegustafsson.com/vagrant-suspend-resume/
